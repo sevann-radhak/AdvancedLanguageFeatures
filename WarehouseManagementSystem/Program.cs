@@ -14,15 +14,26 @@ Order order = new()
 
 OrderProcessor processor = new()
 {
-    OnOrderInitialized  = SendMessageToWarehouse
+    OnOrderInitialized = order => order.IsReadyForShipment
 };
 
 processor.Process(order, SendConfirmationEmail);
+List<Guid> processedOrders = new();
+
+OrderProcessor.ProcessCompleted onCompleted = order =>
+{
+    processedOrders.Add(order.OrderNumber);
+    Console.WriteLine($"Processed {order.OrderNumber}");
+};
+
+//onCompleted += order => { Console.WriteLine("Refill stock..."); };
+
+processor.Process(order, onCompleted);
 
 bool SendMessageToWarehouse(Order order)
 {
     Console.WriteLine($"Please pack the order {order.OrderNumber}");
-    return false;
+    return true;
 }
 
 void SendConfirmationEmail(Order order)
