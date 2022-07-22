@@ -33,6 +33,24 @@ Action<Order> onCompleted = _ =>
 
 //onCompleted += order => { Console.WriteLine("Refill stock..."); };
 
+processor.OrderCreated += (sender, args) =>
+{
+    Thread.Sleep(100);
+    Console.WriteLine("1");
+};
+
+processor.OrderCreated += (sender, args) =>
+{
+    Thread.Sleep(100);
+    Console.WriteLine("2");
+};
+
+processor.OrderCreated += (sender, args) =>
+{
+    Thread.Sleep(100);
+    Console.WriteLine("3");
+};
+
 processor.Process(order, onCompleted);
 
 //Func<Order, bool> func = SendMessageToWarehouse;

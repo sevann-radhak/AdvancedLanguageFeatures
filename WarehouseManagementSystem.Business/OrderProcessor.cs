@@ -9,6 +9,13 @@ namespace WarehouseManagementSystem.Business
         
         public Func<Order, bool> OnOrderInitialized { get; set; }
 
+        public event EventHandler OrderCreated;
+
+        protected virtual void OnOrderCreated()
+        {
+            OrderCreated?.Invoke(this, EventArgs.Empty);
+        }
+
         private void Initialize(Order order)
         {
             ArgumentNullException.ThrowIfNull(order, nameof(order));
@@ -22,7 +29,17 @@ namespace WarehouseManagementSystem.Business
         public void Process(Order order, Action<Order> onCompleted = default)
         {
             Initialize(order);
+            OnOrderCreated();
             onCompleted?.Invoke(order);
         }
     }
+
+    //public class BatchOrderProcessor : OrderProcessor
+    //{
+    //    protected override void OnOrderCreated()
+    //    {
+    //        OnOrderCreated(this, EventArgs.Empty);
+    //        base.OnOrderCreated();
+    //    }
+    //}
 }
