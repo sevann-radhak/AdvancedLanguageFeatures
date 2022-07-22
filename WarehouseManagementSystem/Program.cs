@@ -12,15 +12,20 @@ Order order = new()
     }
 };
 
+Func<Order, bool>? isReadyForShipment = order =>
+{
+    return order.IsReadyForShipment;
+};
+
 OrderProcessor processor = new()
 {
-    OnOrderInitialized = order => order.IsReadyForShipment
+    OnOrderInitialized = isReadyForShipment
 };
 
 processor.Process(order, SendConfirmationEmail);
 List<Guid> processedOrders = new();
 
-OrderProcessor.ProcessCompleted onCompleted = order =>
+Action<Order> onCompleted = _ =>
 {
     processedOrders.Add(order.OrderNumber);
     Console.WriteLine($"Processed {order.OrderNumber}");
@@ -29,6 +34,8 @@ OrderProcessor.ProcessCompleted onCompleted = order =>
 //onCompleted += order => { Console.WriteLine("Refill stock..."); };
 
 processor.Process(order, onCompleted);
+
+//Func<Order, bool> func = SendMessageToWarehouse;
 
 bool SendMessageToWarehouse(Order order)
 {
